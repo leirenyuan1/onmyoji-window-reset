@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 #  一键复位 onmyoji.exe（阴阳师）窗口到初始状态
 #  基准测试环境：笔记本屏幕分辨率 2880x1800，系统缩放 200%
 #  初始状态基准：位置 (288, 198)  大小 2304 x 1358
@@ -22,7 +22,6 @@ Add-Type @'
 using System;
 using System.Runtime.InteropServices;
 public static class Win32Api {
-    // 进程级 DPI 感知（SYSTEM_DPI_AWARE），坐标按物理像素计算
     [DllImport("shcore.dll")]
     public static extern int SetProcessDpiAwareness(int value);
 
@@ -46,7 +45,6 @@ public static class Win32Api {
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool IsZoomed(IntPtr hWnd);
 
-
     [StructLayout(LayoutKind.Sequential)]
     public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
 }
@@ -55,7 +53,12 @@ public static class Win32Api {
 [Win32Api]::SetProcessDpiAwareness(1) | Out-Null
 
 # 弹窗提示辅助函数（仅在异常/警告时调用）
-function Show-Alert([string]$message, [string]$title = "阴阳师窗口复位", [int]$icon = 48) {
+function Show-Alert {
+    param(
+        [string]$message,
+        [string]$title = "阴阳师窗口复位",
+        [int]$icon = 48
+    )
     try {
         $ws = New-Object -ComObject WScript.Shell
         $ws.Popup($message, 0, $title, $icon) | Out-Null
